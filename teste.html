@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sistema</title>
+
+
+    <!-- ======================================== -->
+    <!-- AUTORIZAÇÃO NFC -->
+    <!-- ======================================== -->
+
+    <script>
+
+        window.nfcAutorizado = false;
+
+
+        if (
+            sessionStorage.getItem(
+                "acessoSistema"
+            )
+        ) {
+
+            window.nfcAutorizado = true;
+
+
+            sessionStorage.removeItem(
+                "acessoSistema"
+            );
+
+        }
+
+    </script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: #111;
+
+            color: white;
+
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+        }
+
+
+        #sistema {
+
+            display: none;
+
+        }
+
+
+        #bloqueio {
+
+            position: fixed;
+
+            inset: 0;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background: #111;
+
+            color: white;
+
+            z-index: 999999;
+
+            padding: 20px;
+
+            text-align: center;
+
+        }
+
+
+        #bloqueio .bloqueio-card {
+
+            width: 100%;
+
+            max-width: 400px;
+
+            background: #1e1e1e;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 0 20px
+                rgba(0, 0, 0, 0.5);
+
+        }
+
+
+        #bloqueio h1 {
+
+            margin-top: 0;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: auto;
+
+            padding: 25px;
+
+        }
+
+
+        .tela {
+
+            display: none;
+
+        }
+
+
+        .ativa {
+
+            display: block;
+
+        }
+
+
+        .card {
+
+            background: #1e1e1e;
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            margin-top: 20px;
+
+            box-shadow:
+                0 0 20px
+                rgba(0, 0, 0, 0.4);
+
+        }
+
+
+        h1,
+        h2 {
+
+            text-align: center;
+
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 13px;
+
+            margin: 8px 0;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #333;
+
+            color: white;
+
+            font-size: 16px;
+
+        }
+
+
+        button {
+
+            width: 100%;
+
+            padding: 13px;
+
+            margin-top: 10px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #333;
+
+            color: white;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #444;
+
+        }
+
+
+        .verde {
+
+            background: #176b2c;
+
+        }
+
+
+        .vermelho {
+
+            background: #8b2020;
+
+        }
+
+
+        .azul {
+
+            background: #175a8a;
+
+        }
+
+
+        .mensagem {
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            background: #292929;
+
+            text-align: center;
+
+        }
+
+
+        .menu {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+
+        }
+
+
+        .resultado {
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #292929;
+
+            font-size: 22px;
+
+            text-align: center;
+
+        }
+
+
+        .avaliacao {
+
+            background: #292929;
+
+            padding: 15px;
+
+            margin-top: 10px;
+
+            border-radius: 10px;
+
+        }
+
+
+        .nota {
+
+            font-size: 24px;
+
+        }
+
+
+        hr {
+
+            border: 0;
+
+            border-top:
+                1px solid #444;
+
+            margin: 25px 0;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ======================================== -->
+    <!-- BLOQUEIO -->
+    <!-- ======================================== -->
+
+    <div id="bloqueio">
+
+        <div class="bloqueio-card">
+
+            <h1>
+                🚫 Acesso bloqueado
+            </h1>
+
+            <p>
+                Você precisa passar o cartão NFC
+                para acessar este sistema.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================== -->
+    <!-- SISTEMA -->
+    <!-- ======================================== -->
+
+    <div id="sistema">
+
+        <div class="container">
+
+
+            <!-- LOGIN -->
+
+            <section
+                id="login"
+                class="tela ativa"
+            >
+
+                <div class="card">
+
+                    <h1>🔐 Login</h1>
+
+                    <p>
+                        Entre no sistema.
+                    </p>
+
+                    <input
+                        id="loginUsuario"
+                        type="text"
+                        placeholder="Usuário"
+                    >
+
+                    <input
+                        id="loginSenha"
+                        type="password"
+                        placeholder="Senha"
+                    >
+
+                    <button
+                        class="azul"
+                        onclick="entrar()"
+                    >
+                        Entrar
+                    </button>
+
+                    <button
+                        onclick="mostrar('cadastro')"
+                    >
+                        Criar conta
+                    </button>
+
+                    <div
+                        id="mensagemLogin"
+                        class="mensagem"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- CADASTRO -->
+
+            <section
+                id="cadastro"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h1>👤 Criar conta</h1>
+
+                    <input
+                        id="cadastroUsuario"
+                        type="text"
+                        placeholder="Escolha um usuário"
+                    >
+
+                    <input
+                        id="cadastroSenha"
+                        type="password"
+                        placeholder="Escolha uma senha"
+                    >
+
+                    <button
+                        class="verde"
+                        onclick="criarConta()"
+                    >
+                        Criar conta
+                    </button>
+
+                    <button
+                        onclick="mostrar('login')"
+                    >
+                        Voltar
+                    </button>
+
+                    <div
+                        id="mensagemCadastro"
+                        class="mensagem"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- PAINEL -->
+
+            <section
+                id="painel"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h1>🏠 Sistema</h1>
+
+                    <p id="bemVindo"></p>
+
+                    <div class="menu">
+
+                        <button
+                            onclick="mostrar('calculadora')"
+                        >
+                            🧮 Calculadora
+                        </button>
+
+                        <button
+                            onclick="mostrar('configuracoes')"
+                        >
+                            ⚙️ Configurações
+                        </button>
+
+                        <button
+                            onclick="mostrar('avaliacao')"
+                        >
+                            ⭐ Avaliar
+                        </button>
+
+                        <button
+                            onclick="verAvaliacoes()"
+                        >
+                            📋 Avaliações
+                        </button>
+
+                    </div>
+
+                    <button
+                        class="vermelho"
+                        onclick="sair()"
+                    >
+                        🚪 Sair
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- CALCULADORA -->
+
+            <section
+                id="calculadora"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h2>🧮 Calculadora</h2>
+
+                    <input
+                        id="numero1"
+                        type="number"
+                        placeholder="Primeiro número"
+                    >
+
+                    <select id="operacao">
+
+                        <option value="+">
+                            Somar
+                        </option>
+
+                        <option value="-">
+                            Subtrair
+                        </option>
+
+                        <option value="*">
+                            Multiplicar
+                        </option>
+
+                        <option value="/">
+                            Dividir
+                        </option>
+
+                    </select>
+
+                    <input
+                        id="numero2"
+                        type="number"
+                        placeholder="Segundo número"
+                    >
+
+                    <button
+                        class="azul"
+                        onclick="calcular()"
+                    >
+                        Calcular
+                    </button>
+
+                    <div
+                        id="resultado"
+                        class="resultado"
+                    >
+                        Resultado
+                    </div>
+
+                    <button
+                        onclick="mostrar('painel')"
+                    >
+                        Voltar
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- CONFIGURAÇÕES -->
+
+            <section
+                id="configuracoes"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h2>⚙️ Configurações</h2>
+
+                    <p>
+                        Usuário atual:
+                    </p>
+
+                    <strong id="usuarioAtual"></strong>
+
+                    <hr>
+
+                    <button
+                        class="vermelho"
+                        onclick="excluirConta()"
+                    >
+                        🗑️ Excluir conta
+                    </button>
+
+                    <button
+                        onclick="mostrar('painel')"
+                    >
+                        Voltar
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- AVALIAÇÃO -->
+
+            <section
+                id="avaliacao"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h2>⭐ Avaliação</h2>
+
+                    <p>
+                        De 1 a 10, qual nota você dá?
+                    </p>
+
+                    <input
+                        id="nota"
+                        type="number"
+                        min="1"
+                        max="10"
+                        placeholder="Nota"
+                    >
+
+                    <input
+                        id="comentario"
+                        type="text"
+                        placeholder="Seu comentário"
+                    >
+
+                    <button
+                        class="verde"
+                        onclick="enviarAvaliacao()"
+                    >
+                        Enviar avaliação
+                    </button>
+
+                    <button
+                        onclick="mostrar('painel')"
+                    >
+                        Voltar
+                    </button>
+
+                    <div
+                        id="mensagemAvaliacao"
+                        class="mensagem"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- AVALIAÇÕES -->
+
+            <section
+                id="avaliacoes"
+                class="tela"
+            >
+
+                <div class="card">
+
+                    <h2>📋 Avaliações</h2>
+
+                    <div
+                        id="listaAvaliacoes"
+                    ></div>
+
+                    <button
+                        class="vermelho"
+                        onclick="limparAvaliacoes()"
+                    >
+                        🗑️ Limpar avaliações
+                    </button>
+
+                    <button
+                        onclick="mostrar('painel')"
+                    >
+                        Voltar
+                    </button>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+
+    <!-- ======================================== -->
+    <!-- CONTROLE DA AUTORIZAÇÃO -->
+    <!-- ======================================== -->
+
+    <script>
+
+        window.addEventListener(
+            "load",
+            () => {
+
+                const sistema =
+                    document.getElementById(
+                        "sistema"
+                    );
+
+                const bloqueio =
+                    document.getElementById(
+                        "bloqueio"
+                    );
+
+
+                if (window.nfcAutorizado) {
+
+                    sistema.style.display =
+                        "block";
+
+                    bloqueio.style.display =
+                        "none";
+
+
+                    if (typeof usuarioLogado !== "undefined" &&
+                        usuarioLogado) {
+
+                        mostrar("painel");
+
+                    }
+
+                    else {
+
+                        mostrar("login");
+
+                    }
+
+                }
+
+                else {
+
+                    sistema.style.display =
+                        "none";
+
+                    bloqueio.style.display =
+                        "flex";
+
+                }
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+                      </html>

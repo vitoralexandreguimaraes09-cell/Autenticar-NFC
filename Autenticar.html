@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Leitor NFC</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #101010;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            background: #1c1c1c;
+            padding: 30px;
+            border-radius: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2196f3;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #292929;
+            min-height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>📡 Leitor NFC</h1>
+
+        <p>Aproxime o cartão NFC do celular.</p>
+
+        <button onclick="lerNFC()">
+            📲 Ler cartão
+        </button>
+
+        <div id="status">
+            Aguardando cartão...
+        </div>
+
+    </div>
+
+    <script>
+        async function lerNFC() {
+
+            const status =
+                document.getElementById("status");
+
+            if (!("NDEFReader" in window)) {
+
+                status.innerHTML =
+                    "❌ Web NFC não está disponível neste navegador.";
+
+                return;
+            }
+
+            try {
+
+                const ndef =
+                    new NDEFReader();
+
+                await ndef.scan();
+
+                status.innerHTML =
+                    "📡 Aproxime o cartão NFC...";
+
+                ndef.addEventListener(
+                    "reading",
+                    ({ message, serialNumber }) => {
+
+                        console.log("NFC detectado!");
+                        console.log("Serial:", serialNumber);
+
+                        status.innerHTML =
+                            "✅ Cartão detectado!<br><br>" +
+                            "ID: " +
+                            (serialNumber || "não informado");
+
+
+                        /*
+                        ========================================
+                        CARTÃO AUTORIZADO
+                        ========================================
+                        */
+
+                        if (
+                            serialNumber ===
+                            "d7:4c:70:b1"
+                        ) {
+
+                            /*
+                            Cria uma autorização temporária
+                            para o index.html.
+                            */
+
+                            const token =
+                                crypto.randomUUID();
+
+                            sessionStorage.setItem(
+                                "acessoSistema",
+                                token
+                            );
+
+
+                            status.innerHTML =
+                                "✅ Cartão autorizado!<br><br>" +
+                                "Abrindo o sistema...";
+
+
+                            /*
+                            Abre o index.html
+                            */
+
+                            setTimeout(
+                                () => {
+
+                                    window.location.href =
+                                        "index.html";
+
+                                },
+                                500
+                            );
+
+                        }
+
+                        else {
+
+                            status.innerHTML =
+                                "❌ Cartão não autorizado.";
+
+                        }
+
+                    }
+                );
+
+
+                ndef.addEventListener(
+                    "readingerror",
+                    () => {
+
+                        status.innerHTML =
+                            "❌ Não foi possível ler o cartão.";
+
+                    }
+                );
+
+            }
+
+            catch (erro) {
+
+                console.error(erro);
+
+                status.innerHTML =
+                    "❌ Erro ao iniciar o NFC:<br>" +
+                    erro.message;
+
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>

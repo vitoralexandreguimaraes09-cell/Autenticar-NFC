@@ -77,10 +77,12 @@
     </div>
 
     <script>
+
         async function lerNFC() {
 
             const status =
                 document.getElementById("status");
+
 
             if (!("NDEFReader" in window)) {
 
@@ -88,36 +90,36 @@
                     "❌ Web NFC não está disponível neste navegador.";
 
                 return;
+
             }
+
 
             try {
 
                 const ndef =
                     new NDEFReader();
 
+
                 await ndef.scan();
+
 
                 status.innerHTML =
                     "📡 Aproxime o cartão NFC...";
 
+
                 ndef.addEventListener(
                     "reading",
-                    ({ message, serialNumber }) => {
+                    ({ serialNumber }) => {
 
-                        console.log("NFC detectado!");
-                        console.log("Serial:", serialNumber);
+                        console.log(
+                            "NFC detectado!"
+                        );
 
-                        status.innerHTML =
-                            "✅ Cartão detectado!<br><br>" +
-                            "ID: " +
-                            (serialNumber || "não informado");
+                        console.log(
+                            "Serial:",
+                            serialNumber
+                        );
 
-
-                        /*
-                        ========================================
-                        CARTÃO AUTORIZADO
-                        ========================================
-                        */
 
                         if (
                             serialNumber ===
@@ -125,12 +127,14 @@
                         ) {
 
                             /*
-                            Cria uma autorização temporária
-                            para o index.html.
+                            ========================================
+                            CARTÃO AUTORIZADO
+                            ========================================
                             */
 
                             const token =
                                 crypto.randomUUID();
+
 
                             sessionStorage.setItem(
                                 "acessoSistema",
@@ -143,15 +147,11 @@
                                 "Abrindo o sistema...";
 
 
-                            /*
-                            Abre o index.html
-                            */
-
                             setTimeout(
                                 () => {
 
                                     window.location.href =
-                                        "https://vitoralexandreguimaraes09-cell.github.io/Leitor-NFC/";
+                                        "index.html";
 
                                 },
                                 500
@@ -180,11 +180,15 @@
                     }
                 );
 
+
             }
 
             catch (erro) {
 
-                console.error(erro);
+                console.error(
+                    erro
+                );
+
 
                 status.innerHTML =
                     "❌ Erro ao iniciar o NFC:<br>" +
@@ -193,6 +197,7 @@
             }
 
         }
+
     </script>
 
 </body>
